@@ -2,6 +2,13 @@ services:
   nginx:
     build:
       context: .
+    container_name: ${APP_NAME}
+    expose: 
+      - 80/tcp
+      - ${EXTERNAL_SSH_PORT}/tcp
+    ports:
+      - ${EXTERNAL_HTTP_PORT}:80
+      - ${EXTERNAL_SSH_PORT}:22
     environment:
       SSH_AUTHORIZED_KEY: ${SSH_AUTHORIZED_KEY}
     stdin_open: true
