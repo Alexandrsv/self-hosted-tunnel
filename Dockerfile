@@ -1,5 +1,4 @@
-FROM nginx
-MAINTAINER Igor Shishkin <me@teran.ru>
+FROM nginx:1.29.2
 
 EXPOSE 22 80
 

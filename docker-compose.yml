@@ -1,13 +1,22 @@
-version: '3.9'
-
 services:
   nginx:
     build:
       context: .
-    ports:
-      - ${EXTERNAL_HTTP_PORT}:80
-      - ${EXTERNAL_SSH_PORT}:22
     environment:
       SSH_AUTHORIZED_KEY: ${SSH_AUTHORIZED_KEY}
     stdin_open: true
     tty: true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${APP_NAME}-web.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.${APP_NAME}-web.entrypoints=${TRAEFIK_ENTRYPOINT_WEB:-web}"
+      - "traefik.http.services.${APP_NAME}-web.loadbalancer.server.port=80"
+      - "traefik.http.routers.${APP_NAME}-websecure.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.${APP_NAME}-websecure.entrypoints=${TRAEFIK_ENTRYPOINT_WEBSECURE:-websecure}"
+      - "traefik.http.routers.${APP_NAME}-websecure.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
+      - "traefik.http.services.${APP_NAME}-websecure.loadbalancer.server.port=80"
+
+networks:
+  default:
+    name: traefik-default
+    external: true
