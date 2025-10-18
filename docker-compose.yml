@@ -15,13 +15,19 @@ services:
     tty: true
     labels:
       - "traefik.enable=true"
+      # HTTP роутер
       - "traefik.http.routers.${APP_NAME}-web.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.${APP_NAME}-web.entrypoints=${TRAEFIK_ENTRYPOINT_WEB:-web}"
-      - "traefik.http.services.${APP_NAME}-web.loadbalancer.server.port=80"
+      - "traefik.http.routers.${APP_NAME}-web.service=${APP_NAME}-service"
+      # HTTPS роутер
       - "traefik.http.routers.${APP_NAME}-websecure.rule=Host(`${DOMAIN}`)"
       - "traefik.http.routers.${APP_NAME}-websecure.entrypoints=${TRAEFIK_ENTRYPOINT_WEBSECURE:-websecure}"
       - "traefik.http.routers.${APP_NAME}-websecure.tls.certresolver=${TRAEFIK_CERTRESOLVER:-letsencrypt}"
-      - "traefik.http.services.${APP_NAME}-websecure.loadbalancer.server.port=80"
+      - "traefik.http.routers.${APP_NAME}-websecure.service=${APP_NAME}-service"
+      # Один сервис для обоих роутеров
+      - "traefik.http.services.${APP_NAME}-service.loadbalancer.server.port=80"
+
+
 
 networks:
   default:
